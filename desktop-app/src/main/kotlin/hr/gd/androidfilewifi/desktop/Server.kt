@@ -143,8 +143,10 @@ class ReceiverServer(private val ctx: ReceiverContext) {
                     sslConnector(
                         keyStore = ctx.identity.keyStore,
                         keyAlias = ctx.identity.alias,
-                        keyStorePassword = { ctx.identity.password },
-                        privateKeyPassword = { ctx.identity.password },
+                        // Ktor zeroes the arrays it is given after use, so hand out a fresh copy each time
+                        // (otherwise the retry on the next port fails with "Cannot recover key").
+                        keyStorePassword = { ctx.identity.password.copyOf() },
+                        privateKeyPassword = { ctx.identity.password.copyOf() },
                     ) {
                         host = "0.0.0.0"
                         port = p

@@ -99,6 +99,17 @@ class ReceiverTest {
     private fun upload(token: String, sid: String, id: Int, data: ByteArray, offset: Long = 0): HttpResponse<String> =
         send("PUT", "/sessions/$sid/files/$id?offset=$offset", data, token)
 
+    @Test fun busyPortFallsBackToTheNextOne() {
+        // A second receiver wanting the same port must move on instead of failing.
+        val second = ReceiverServer(ctx)
+        try {
+            val p = second.start()
+            assertNotEquals(port(), p)
+        } finally { second.stop() }
+    }
+
+    private fun port() = base.substringAfter("localhost:").substringBefore("/").toInt()
+
     @Test fun pingNeedsNoAuthAndPinnedTlsWorks() {
         val r = send("GET", "/ping")
         assertEquals(200, r.statusCode())
