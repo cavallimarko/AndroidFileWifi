@@ -1,5 +1,8 @@
 # AndroidFileWifi: Plan
 
+> **Status:** M0–M6 implemented (see [README.md](README.md) for usage, build steps and known limits).
+> The Android UI is untested on a real device. Everything else has automated tests.
+
 Two apps that work together:
 
 1. **Android app**: a gallery-style browser for photos and videos. Lets you multi-select items (including range select), browse folders, and send items or whole folders to a PC over Wi-Fi.

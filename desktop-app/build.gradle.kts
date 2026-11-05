@@ -42,6 +42,13 @@ dependencies {
 
 tasks.test { useJUnit() }
 
+// Regenerates packaging/icon.ico from the code-drawn app icon.
+tasks.register<JavaExec>("generateIcon") {
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("hr.gd.androidfilewifi.desktop.IconExportKt")
+    args(file("packaging/icon.ico").absolutePath)
+}
+
 compose.desktop {
     application {
         mainClass = "hr.gd.androidfilewifi.desktop.MainKt"
@@ -53,6 +60,7 @@ compose.desktop {
             vendor = "GD Entertainment"
             modules("java.naming", "jdk.crypto.ec", "java.sql", "jdk.unsupported")
             windows {
+                iconFile.set(project.file("packaging/icon.ico"))
                 menuGroup = "AndroidFileWifi"
                 shortcut = true
                 dirChooser = true
