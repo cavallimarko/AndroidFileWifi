@@ -8,6 +8,7 @@ import hr.gd.androidfilewifi.data.MediaFilter
 import hr.gd.androidfilewifi.data.MediaItem
 import hr.gd.androidfilewifi.data.MediaRepository
 import hr.gd.androidfilewifi.data.toAlbums
+import hr.gd.androidfilewifi.selection.SelectionController
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -66,16 +67,80 @@ class GalleryViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun openAlbum(id: Long) {
+        mediaSel.clear(); publishMedia()
         filter.value = MediaFilter.All
         openAlbumId.value = id
     }
+
+    fun setFilter(f: MediaFilter) {
+        filter.value = f
+        // Keep only selected items that stay visible under the new filter.
+        val albumId = openAlbumId.value
+        val stillVisible = allItems.value.filter { item ->
+            (albumId == null || albumId == ALL_ID || item.bucketId == albumId) &&
+                when (f) {
+                    MediaFilter.All -> true
+                    MediaFilter.Photos -> !item.isVideo
+                    MediaFilter.Videos -> item.isVideo
+                }
+        }.map { it.id }
+        mediaSel.retainOnly(stillVisible)
+        publishMedia()
+    }
+
+    // ---- Media selection -------------------------------------------------------------------
+    private val mediaSel = SelectionController<Long>()
+    val selectedMedia = MutableStateFlow<Set<Long>>(emptySet())
+    val rangeMode = MutableStateFlow(false)
+
+    private fun publishMedia() { selectedMedia.value = mediaSel.keys.toSet() }
+    private fun displayedIds() = visibleItems.value.map { it.id }
+
+    fun mediaLongPress(index: Int) { mediaSel.longPress(displayedIds(), index); publishMedia() }
+    fun mediaTap(index: Int) { mediaSel.tap(displayedIds(), index); publishMedia() }
+    fun mediaDrag(from: Int, to: Int) { mediaSel.addRange(displayedIds(), from, to); publishMedia() }
+    fun toggleGroup(ids: List<Long>) { mediaSel.toggleGroup(ids); publishMedia() }
+    fun selectAllMedia() { mediaSel.selectAll(displayedIds()); publishMedia() }
+    fun clearMediaSelection() { mediaSel.clear(); publishMedia() }
+    fun setRangeMode(on: Boolean) { rangeMode.value = on; mediaSel.rangeMode = on }
+
+    fun selectedMediaItems(): List<MediaItem> {
+        val ids = mediaSel.keys
+        return visibleItems.value.filter { it.id in ids }
+    }
+
+    // ---- Folder selection ------------------------------------------------------------------
+    private val albumSel = SelectionController<Long>()
+    val selectedAlbums = MutableStateFlow<Set<Long>>(emptySet())
+    private fun publishAlbums() { selectedAlbums.value = albumSel.keys.toSet() }
+    private fun albumIds() = albums.value.map { it.bucketId }
+
+    fun albumLongPress(index: Int) { albumSel.longPress(albumIds(), index); publishAlbums() }
+    fun albumTap(index: Int) { albumSel.toggle(albumIds(), index); publishAlbums() }
+    fun selectAllAlbums() { albumSel.selectAll(albumIds()); publishAlbums() }
+    fun clearAlbumSelection() { albumSel.clear(); publishAlbums() }
+
+    fun itemsInSelectedAlbums(): List<MediaItem> {
+        val ids = albumSel.keys
+        return allItems.value.filter { it.bucketId in ids }
+    }
+
+    // ---- Sending ---------------------------------------------------------------------------
+    /** Items the user asked to send; the UI shows the send dialog while this is non-null. */
+    val pendingSend = MutableStateFlow<List<MediaItem>?>(null)
+
+    fun requestSend(items: List<MediaItem>) { if (items.isNotEmpty()) pendingSend.value = items }
+    fun cancelSend() { pendingSend.value = null }
 
     fun openViewer(index: Int) { viewerIndex.value = index }
     fun closeViewer() { viewerIndex.value = null }
 
     /** Handles system Back. Returns true if it consumed the event. */
     fun onBack(): Boolean = when {
+        pendingSend.value != null -> { pendingSend.value = null; true }
         viewerIndex.value != null -> { viewerIndex.value = null; true }
+        mediaSel.isActive -> { clearMediaSelection(); true }
+        albumSel.isActive -> { clearAlbumSelection(); true }
         openAlbumId.value != null -> { openAlbumId.value = null; true }
         else -> false
     }

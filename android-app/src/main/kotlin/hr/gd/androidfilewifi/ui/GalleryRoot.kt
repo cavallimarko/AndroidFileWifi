@@ -50,7 +50,7 @@ fun GalleryRoot(
                 }
             }
             if (albumId == null) {
-                AlbumsScreen(viewModel, topInset = !partialAccess)
+                AlbumsScreen(viewModel, topInset = !partialAccess, onOpenTransfers = {}, onOpenPc = {})
             } else {
                 MediaGridScreen(viewModel, topInset = !partialAccess)
             }

@@ -49,6 +49,8 @@ dependencies {
     implementation(libs.telephoto.zoomable)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
+
+    testImplementation(libs.junit)
 }
 
 kotlin {
