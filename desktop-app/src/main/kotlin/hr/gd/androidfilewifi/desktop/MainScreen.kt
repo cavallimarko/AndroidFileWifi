@@ -173,6 +173,11 @@ private fun PairCard(
                     Text("PC address: $selected", style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
+                Text(
+                    "Security ID: ${hr.gd.androidfilewifi.shared.PairingLink.securityId(controller.identity.fingerprint)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 OutlinedButton(onClick = controller.pairing::regenerate) { Text("New code") }
             }
         }

@@ -16,7 +16,7 @@ jmdns = "3.6.5"
 zxing = "3.5.4"
 slf4j = "2.0.20"
 bouncycastle = "1.86"
-okhttp = "5.5.1"
+okhttp = "5.3.2"
 work = "2.11.2"
 mlkitScanner = "16.1.0"
 

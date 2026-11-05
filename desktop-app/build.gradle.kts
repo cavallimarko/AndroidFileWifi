@@ -35,6 +35,8 @@ dependencies {
     implementation(libs.slf4j.simple)
 
     testImplementation(libs.junit)
+    testImplementation(libs.okhttp)
+    testImplementation(libs.kotlinx.coroutines.core)
     testImplementation(kotlin("test"))
 }
 

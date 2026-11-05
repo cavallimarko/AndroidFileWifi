@@ -19,6 +19,10 @@ data class PairingLink(
     }
 
     companion object {
+        /** Short human-comparable form of a certificate fingerprint, e.g. "AB12 CD34 EF56 7890". */
+        fun securityId(fingerprint: String): String =
+            fingerprint.take(16).uppercase().chunked(4).joinToString(" ")
+
         fun parse(text: String): PairingLink? {
             val t = text.trim()
             if (!t.startsWith("afw://")) return null

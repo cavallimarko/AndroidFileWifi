@@ -132,12 +132,28 @@ class GalleryViewModel(app: Application) : AndroidViewModel(app) {
     fun requestSend(items: List<MediaItem>) { if (items.isNotEmpty()) pendingSend.value = items }
     fun cancelSend() { pendingSend.value = null }
 
+    /** Called after a send job was queued: leave selection mode and show the transfers list. */
+    fun sendStarted() {
+        pendingSend.value = null
+        clearMediaSelection()
+        clearAlbumSelection()
+        overlay.value = Overlay.Transfers
+    }
+
+    // ---- Full-screen overlays on top of the gallery ---------------------------------------
+    enum class Overlay { None, Transfers, Pcs }
+    val overlay = MutableStateFlow(Overlay.None)
+    fun openTransfers() { overlay.value = Overlay.Transfers }
+    fun openPcs() { overlay.value = Overlay.Pcs }
+    fun closeOverlay() { overlay.value = Overlay.None }
+
     fun openViewer(index: Int) { viewerIndex.value = index }
     fun closeViewer() { viewerIndex.value = null }
 
     /** Handles system Back. Returns true if it consumed the event. */
     fun onBack(): Boolean = when {
         pendingSend.value != null -> { pendingSend.value = null; true }
+        overlay.value != Overlay.None -> { overlay.value = Overlay.None; true }
         viewerIndex.value != null -> { viewerIndex.value = null; true }
         mediaSel.isActive -> { clearMediaSelection(); true }
         albumSel.isActive -> { clearAlbumSelection(); true }

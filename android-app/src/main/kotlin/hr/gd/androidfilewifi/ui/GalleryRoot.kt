@@ -30,6 +30,7 @@ fun GalleryRoot(
     val albumId by viewModel.openAlbumId.collectAsState()
     val viewerIndex by viewModel.viewerIndex.collectAsState()
     val visible by viewModel.visibleItems.collectAsState()
+    val overlay by viewModel.overlay.collectAsState()
 
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
@@ -50,11 +51,13 @@ fun GalleryRoot(
                 }
             }
             if (albumId == null) {
-                AlbumsScreen(viewModel, topInset = !partialAccess, onOpenTransfers = {}, onOpenPc = {})
+                AlbumsScreen(viewModel, topInset = !partialAccess, onOpenTransfers = viewModel::openTransfers, onOpenPc = viewModel::openPcs)
             } else {
                 MediaGridScreen(viewModel, topInset = !partialAccess)
             }
         }
+
+        Overlays(viewModel, overlay)
 
         viewerIndex?.let { index ->
             if (visible.isNotEmpty()) {
@@ -82,5 +85,15 @@ fun PermissionScreen(onGrant: () -> Unit) {
             modifier = Modifier.padding(vertical = 16.dp),
         )
         Button(onClick = onGrant) { Text("Grant access") }
+    }
+}
+
+/** Transfers / PCs screens drawn over the gallery (also used when the gallery itself isn't available). */
+@Composable
+fun Overlays(viewModel: GalleryViewModel, overlay: GalleryViewModel.Overlay) {
+    when (overlay) {
+        GalleryViewModel.Overlay.Transfers -> Surface(Modifier.fillMaxSize()) { TransfersScreen(onBack = viewModel::closeOverlay) }
+        GalleryViewModel.Overlay.Pcs -> Surface(Modifier.fillMaxSize()) { PcScreen(onBack = viewModel::closeOverlay) }
+        GalleryViewModel.Overlay.None -> Unit
     }
 }
