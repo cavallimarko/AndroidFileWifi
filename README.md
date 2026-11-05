@@ -77,3 +77,7 @@ The Gradle plugin downloads WiX by itself. "Start with Windows" works from the i
 * Shares from other apps (share sheet) are read via temporary URI grants, so keep FileWifi open until the transfer ends.
 * The whole media library is loaded into memory (fine for tens of thousands of items; paging is future work).
 * Phone → PC only. Browsing the phone from the PC is not implemented.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
