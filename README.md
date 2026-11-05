@@ -69,8 +69,11 @@ The Gradle plugin downloads WiX by itself. "Start with Windows" works from the i
 
 * Everything is implemented and unit/integration tested on the JVM: selection logic, protocol, the real HTTPS server
   driven by the phone's own client (pairing, pinning, resume, parallel uploads, path safety, revocation).
-* **The Android UI has not been run on a device or emulator** (none was available while building). Build the APK and
-  try it; the likely rough edges are gesture feel and permission flows.
+* The Android app was run on an Android 35 emulator: browsing, range select, manual pairing (Security ID check),
+  sending a folder and the photo viewer all work, and received files were byte-identical to the originals.
+  **Not yet tested on a real phone or emulator:** QR scanning, automatic discovery (mDNS; the emulator can't see the
+  PC's network), videos, drag-select with auto-scroll, and the progress notification.
+  To pair from the emulator choose "Enter address manually" and use `10.0.2.2`.
 * Shares from other apps (share sheet) are read via temporary URI grants, so keep FileWifi open until the transfer ends.
 * The whole media library is loaded into memory (fine for tens of thousands of items; paging is future work).
 * Phone → PC only. Browsing the phone from the PC is not implemented.

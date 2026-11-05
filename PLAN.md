@@ -1,7 +1,7 @@
 # AndroidFileWifi: Plan
 
 > **Status:** M0–M6 implemented (see [README.md](README.md) for usage, build steps and known limits).
-> The Android UI is untested on a real device. Everything else has automated tests.
+> Tested on an emulator (gallery, selection, pairing, sending); QR scan, discovery and video still need a real phone.
 
 Two apps that work together:
 
