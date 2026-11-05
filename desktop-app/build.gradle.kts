@@ -55,7 +55,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Exe)
             packageName = "AndroidFileWifi"
-            packageVersion = "1.0.0"
+            packageVersion = "0.1.0"
             description = "Receives photos and videos from your Android phone over Wi-Fi"
             vendor = "GD Entertainment"
             modules("java.naming", "jdk.crypto.ec", "java.sql", "jdk.unsupported")
