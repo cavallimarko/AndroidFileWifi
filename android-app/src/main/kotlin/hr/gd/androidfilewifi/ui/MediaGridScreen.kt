@@ -129,8 +129,10 @@ fun MediaGridScreen(viewModel: GalleryViewModel, topInset: Boolean) {
     val selecting = selected.isNotEmpty()
 
     fun entryAt(offset: Offset): GridEntry? {
+        // Item offsets are measured from the start of the content *after* the top padding
+        // (the space under the floating top bar), so shift the pointer by that padding.
         val x = offset.x.toInt()
-        val y = offset.y.toInt()
+        val y = offset.y.toInt() - gridState.layoutInfo.beforeContentPadding
         val info = gridState.layoutInfo.visibleItemsInfo.firstOrNull {
             x >= it.offset.x && x < it.offset.x + it.size.width &&
                 y >= it.offset.y && y < it.offset.y + it.size.height

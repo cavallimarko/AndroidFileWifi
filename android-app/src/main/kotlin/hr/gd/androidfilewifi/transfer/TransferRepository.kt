@@ -106,7 +106,9 @@ class TransferRepository(context: Context) {
     private fun schedule(id: String) {
         val request = OneTimeWorkRequestBuilder<SendWorker>()
             .setInputData(workDataOf(SendWorker.KEY_JOB to id))
-            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            // No network constraint on purpose: CONNECTED means "validated internet", which a LAN-only
+            // Wi-Fi never has. The worker reports an unreachable PC itself.
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.NOT_REQUIRED).build())
             .setBackoffCriteria(BackoffPolicy.LINEAR, 15, java.util.concurrent.TimeUnit.SECONDS)
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .addTag(tag(id))
